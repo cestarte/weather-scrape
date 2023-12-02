@@ -56,10 +56,11 @@ def find_elevation(soup: bs4.BeautifulSoup):
     unit = ""
 
     elev_parent = soup.find(string=re.compile("^Elev"))
-    elev_elem = elev_parent.next_sibling
-    if elev_elem != None:
-        elev = elev_elem.text
-        unit = alpha_from_elem(elev_elem.next_sibling)
+    if elev_parent != None:
+        elev_elem = elev_parent.next_sibling
+        if elev_elem != None:
+            elev = elev_elem.text
+            unit = alpha_from_elem(elev_elem.next_sibling)
     return {"value": elev, "unit": unit}
 
 
