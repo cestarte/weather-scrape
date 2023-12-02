@@ -1,0 +1,8 @@
+{
+    "database": "scrape.sqlite",
+    "urls": [
+        "https://www.wunderground.com/weather/us/tx/brownsville",
+        "https://www.wunderground.com/weather/us/fl/miami",
+        "https://www.wunderground.com/weather/za/johannesburg"
+    ]
+}

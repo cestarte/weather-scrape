@@ -1,6 +1,7 @@
 import bs4
 import requests
 import re
+from weather import Weather
 
 
 def numeric_from_elem(soup_elem):
@@ -98,27 +99,33 @@ def find_location_name(soup: bs4.BeautifulSoup):
     return name
 
 
-if __name__ == "__main__":
-    # url = "https://www.wunderground.com/weather/us/tx/dallas"
-    url = "https://www.wunderground.com/weather/za/johannesburg"
+def scrape(url: str):
     res = requests.get(url)
     res.raise_for_status()
 
     soup = bs4.BeautifulSoup(res.text, "html.parser")
 
-    high = find_high(soup)
-    print(f"High: {high}")
-    low = find_low(soup)
-    print(f"Low: {low}")
+    w = Weather()
+    w.high_temp = find_high(soup)
+    w.low_temp = find_low(soup)
     degree = find_degree(soup)
-    print(f"Now: {degree['value']} {degree['unit']}")
+    w.current_temp = degree["value"]
+    w.degree_unit = degree["unit"]
     coord = find_coordinates(soup)
-    print(
-        f"Coord: {coord['north']}N, {coord['south']}S, {coord['east']}E, {coord['west']}W"
-    )
+    w.north = coord["north"]
+    w.south = coord["south"]
+    w.west = coord["west"]
+    w.east = coord["east"]
     elevation = find_elevation(soup)
-    print(f"Elevation: {elevation['value']} {elevation['unit']}")
-    station = find_station_name(soup)
-    print(f"Station: {station}")
-    location = find_location_name(soup)
-    print(f"Location: {location}")
+    w.elevation = elevation["value"]
+    w.elevation_unit = elevation["unit"]
+    w.station = find_station_name(soup)
+    w.location = find_location_name(soup)
+    w.url = url
+
+    return w
+
+
+if __name__ == "__main__":
+    w = scrape("https://www.wunderground.com/weather/za/johannesburg")
+    w.print()
