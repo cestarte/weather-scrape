@@ -76,6 +76,14 @@ def find_degree(soup: bs4.BeautifulSoup):
     return {"value": degree, "unit": unit}
 
 
+def find_condition(soup: bs4.BeautifulSoup):
+    condition = ""
+    condition_elem = soup.select_one(".condition-icon p")
+    if condition_elem != None:
+        condition = condition_elem.text
+    return condition
+
+
 def find_station_name(soup: bs4.BeautifulSoup):
     name = ""
     station_elem = soup.select_one(".station-name")
@@ -100,6 +108,14 @@ def find_location_name(soup: bs4.BeautifulSoup):
     return name
 
 
+def find_humidity(soup: bs4.BeautifulSoup):
+    humidity = ""
+    humidity_elem = soup.select_one("wu-unit-humidity .wu-value-to")
+    if humidity_elem != None:
+        humidity = humidity_elem.text
+    return humidity
+
+
 def scrape(url: str):
     res = requests.get(url)
     res.raise_for_status()
@@ -112,6 +128,8 @@ def scrape(url: str):
     degree = find_degree(soup)
     w.current_temp = degree["value"]
     w.degree_unit = degree["unit"]
+    w.condition = find_condition(soup)
+    w.humidity = find_humidity(soup)
     coord = find_coordinates(soup)
     w.north = coord["north"]
     w.south = coord["south"]
