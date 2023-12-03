@@ -1,7 +1,7 @@
 # weather-scrape
 
 Scrape weather data from the web and store it into a local sqlite database.
-Work in progress! Right now there's just a single source. Supply a wunderground URL and the script will collect the info and print it to your terminal. 
+Work in progress! Right now there's just a single source (wunderground). Supply a URL and the script will collect the info and then store it to a local sqlite database.
 
 ## Prerequisites
 
@@ -19,8 +19,9 @@ Run `pip install -r installs.txt`
 
 ## Create the database
 
-The app stores the scraped data into a database.
+The app stores the scraped data into a database. The database needs to exist before the app will use it. 
 
+Run the provided script to create the database.
 `python3 prepare_database.py`
 
 To wipe it out and start over, use the `-d` argument.
