@@ -121,19 +121,13 @@ if __name__ == "__main__":
 
     # read settings file to get full path to database
     settings_path = os.environ.get("SETTINGS_PATH", "settings.json")
-    config = Settings()
-    status = config.read(settings_path)
-    if status[0] is False:
-        print(f"FATAL: Unable to read settings.\n{str(status[1])}")
-        os._exit(1)
-    else:
-        config.populate_values(status[1])
-        print(f"Database: {config.values['database']}")
+    config = Settings.read(settings_path)
+    print(f"Database: {config.database}")
 
     # parse the args
     args = parser.parse_args()
     # print(args)
     if args.drop:
-        drop_tables(config.values["database"])
+        drop_tables(config.database)
 
-    create_tables(config.values["database"])
+    create_tables(config.database)
