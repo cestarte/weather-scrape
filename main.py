@@ -5,6 +5,7 @@ from wunderground import *
 from weather import *
 from dotenv import load_dotenv
 from json import JSONDecodeError
+from datetime import datetime
 
 
 def read_settings(full_path):
@@ -28,6 +29,15 @@ def read_settings(full_path):
         os._exit(1)
 
 
+def find_unused_urls(database_path, urls):
+    filtered_urls = []
+    today = datetime.today()
+    for url in urls:
+        if Weather.already_exists(database_path, url, today) == False:
+            filtered_urls.append(url)
+    return filtered_urls
+
+
 if __name__ == "__main__":
     load_dotenv()
     config = read_settings(os.environ["SETTINGS_PATH"])
@@ -41,8 +51,22 @@ if __name__ == "__main__":
         )
         os._exit(1)
 
-    weathers = []
-    # for url in config.urls:
-    #    weathers.append(scrape(url))
+    # Rule: don't spam requests. Limit each URL to 1x/day
+    filtered_urls = find_unused_urls(config.database, config.urls)
+    if len(config.urls) != len(filtered_urls):
+        print(
+            f"NOTICE: There are already results for today. To prevent spamming, we're only going to run the {len(filtered_urls)} URLs which haven't already been collected today."
+        )
+    print(filtered_urls)
 
-    # write_to_database(config.database, weathers)
+    # if we have anything to collect, do it.
+    if len(filtered_urls) > 0:
+        weathers = []
+        for url in filtered_urls:
+            try:
+                weathers.append(scrape(url))
+            except Exception as ex:
+                print(f"WARNING: Failed to scrape URL {url}")
+                print(ex)
+
+        Weather.persist(config.database, weathers)
